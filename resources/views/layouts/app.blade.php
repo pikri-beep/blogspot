@@ -55,6 +55,15 @@
                         Profile
                     </a>
 
+                    <a href="/create"
+                        class="hidden md:flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white px-5 py-3 rounded-2xl transition font-semibold">
+
+                        <span class="text-lg">+</span>
+
+                        Tulis Artikel
+
+                    </a>
+
                     <form action="/logout" method="POST">
 
                         @csrf
@@ -86,12 +95,57 @@
     </nav>
 
     {{-- MAIN CONTENT --}}
-    <main class="max-w-7xl mx-auto px-6 py-10">
+    <main class="max-w-8xl mx-auto px-6 py-10">
 
         @yield('content')
 
     </main>
+    {{-- IMAGE PREVIEW MODAL --}}
+    <div id="imageModal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[999] hidden items-center justify-center p-6">
 
+        {{-- CLOSE BUTTON --}}
+        <button onclick="closeImageModal()"
+            class="absolute top-6 right-6 text-white text-5xl font-light hover:scale-110 transition">
+            ×
+        </button>
+
+        {{-- IMAGE --}}
+        <img id="previewImage" src="" class="max-w-6xl w-full max-h-[90vh] object-contain rounded-3xl shadow-2xl">
+
+    </div>
+
+    <script>
+    function openImageModal(src) {
+        const modal = document.getElementById('imageModal');
+        const image = document.getElementById('previewImage');
+
+        image.src = src;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+
+        document.body.style.overflow = 'auto';
+    }
+
+    // CLOSE KETIKA CLICK BACKGROUND
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target.id === 'imageModal') {
+            closeImageModal();
+        }
+    });
+    </script>
+
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 </body>
 
 </html>

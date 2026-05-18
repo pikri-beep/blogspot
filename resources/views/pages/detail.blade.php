@@ -7,7 +7,12 @@
     <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm overflow-hidden">
 
         @if($post->image)
-        <img src="{{ asset('storage/'.$post->image) }}" class="w-full h-96 object-cover">
+        <div class="overflow-hidden rounded-[32px]">
+
+            <img src="{{ asset('storage/'.$post->image) }}" onclick="openImageModal(this.src)"
+                class="w-full h-[260px] md:h-[400px] lg:h-[520px] object-cover cursor-zoom-in hover:scale-[1.02] transition duration-500">
+
+        </div>
         @endif
 
         <div class="p-10">
@@ -22,8 +27,11 @@
                 {{ $post->title }}
             </h1>
 
-            <div class="mt-12 leading-[2.2] text-lg text-gray-700">
-                {!! nl2br(e($post->content)) !!}
+            <div
+                class="mt-12 prose prose-lg max-w-none prose-img:rounded-3xl prose-headings:font-black prose-p:text-gray-700">
+
+                {!! $post->content !!}
+
             </div>
             {{-- LIKE SECTION --}}
             <div class="flex items-center gap-4 mt-8">

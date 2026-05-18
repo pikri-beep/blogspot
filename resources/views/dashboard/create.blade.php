@@ -48,9 +48,16 @@
             <label class="block text-sm font-bold uppercase tracking-wider mb-2 text-gray-600">
                 Konten Artikel
             </label>
-            <textarea name="content" rows="10" required
-                placeholder="Tuliskan ide, cerita, atau tutorial kamu di sini..."
-                class="w-full rounded-xl border border-gray-200 bg-gray-50 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 p-4 text-gray-800 transition leading-relaxed placeholder:text-gray-400">{{ old('content') }}</textarea>
+            <div class="mt-6">
+
+                <label class="block text-sm font-semibold text-gray-700 mb-3">
+                    Content
+                </label>
+
+                <textarea name="content" id="editor" rows="10"
+                    class="w-full rounded-3xl border-gray-200">{{ old('content') }}</textarea>
+
+            </div>
             <x-input-error :messages="$errors->get('content')" class="mt-1" />
         </div>
 
@@ -66,7 +73,19 @@
             </a>
         </div>
 
+
     </form>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        ClassicEditor
+            .create(document.querySelector('#editor'))
+            .catch(error => {
+                console.error(error);
+            });
+
+    });
+    </script>
 </div>
 
 {{-- JAVASCRIPT UNTUK PREVIEW --}}

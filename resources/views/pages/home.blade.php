@@ -89,8 +89,12 @@
 
                         @if($post->image)
 
-                        <img src="{{ asset('storage/'.$post->image) }}"
-                            class="w-full h-full min-h-[260px] object-cover">
+                        <div class="aspect-[4/3] overflow-hidden">
+
+                            <img src="{{ asset('storage/'.$post->image) }}"
+                                class="w-full h-full object-cover hover:scale-105 transition duration-700">
+
+                        </div>
 
                         @else
 
