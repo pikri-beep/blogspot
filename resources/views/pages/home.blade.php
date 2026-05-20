@@ -73,7 +73,43 @@
             </div>
 
         </div>
+        {{-- SEARCH BAR --}}
+        <div class="bg-white rounded-[32px] shadow-sm border border-gray-100 p-6 mb-10">
 
+            <form action="/" method="GET">
+
+                <div class="flex flex-col md:flex-row gap-4">
+
+                    {{-- INPUT --}}
+                    <div class="flex-1 relative">
+
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5 text-gray-400 absolute left-5 top-1/2 -translate-y-1/2" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+
+                        </svg>
+
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari artikel..."
+                            class="w-full h-14 rounded-2xl border border-gray-200 bg-gray-50 pl-14 pr-6 text-gray-700 focus:border-sky-500 focus:ring-sky-500">
+
+                    </div>
+
+                    {{-- BUTTON --}}
+                    <button type="submit"
+                        class="h-14 px-8 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white font-semibold transition duration-300 shadow-sm">
+
+                        Cari Artikel
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
         {{-- ARTICLE LIST --}}
         <div class="space-y-8">
 
@@ -175,7 +211,7 @@
         {{-- PAGINATION --}}
         <div class="mt-12">
 
-            {{ $posts->links() }}
+            {{ $posts->withQueryString()->links() }}
 
         </div>
 
@@ -198,7 +234,7 @@
                         </p>
 
                         <h3 class="text-3xl font-black text-gray-900 mt-2">
-                            Latest News
+                            🔥 Trending Articles
                         </h3>
 
                     </div>
@@ -207,7 +243,7 @@
 
                 <div class="space-y-8">
 
-                    @foreach($posts->take(5) as $post)
+                    @foreach($trending as $post)
 
                     <a href="/article/{{ $post->slug }}"
                         class="block group border-b border-gray-100 pb-6 last:border-0">
@@ -232,6 +268,32 @@
                                     {{ $post->created_at->format('d M Y') }}
 
                                 </p>
+
+                                <div class="flex items-center gap-4 mt-3 text-sm text-gray-500">
+
+                                    {{-- LIKE --}}
+                                    <div class="flex items-center gap-1">
+
+                                        ❤️
+
+                                        <span>
+                                            {{ $post->likes_count }}
+                                        </span>
+
+                                    </div>
+
+                                    {{-- COMMENT --}}
+                                    <div class="flex items-center gap-1">
+
+                                        💬
+
+                                        <span>
+                                            {{ $post->comments_count }}
+                                        </span>
+
+                                    </div>
+
+                                </div>
 
                             </div>
 

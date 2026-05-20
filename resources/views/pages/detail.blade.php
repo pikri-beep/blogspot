@@ -27,39 +27,64 @@
                 {{ $post->title }}
             </h1>
 
-            <div
-                class="mt-12 prose prose-lg max-w-none prose-img:rounded-3xl prose-headings:font-black prose-p:text-gray-700">
+            {{-- 1. BUNGKUS KONTEN DENGAN WRAPPER & BERI EVENT JAVASCRIPT --}}
+            <div class="relative mt-12">
+                <div id="article-content"
+                    class="prose prose-lg max-w-none prose-img:rounded-3xl prose-headings:font-black prose-p:text-gray-700 transition-all duration-500 overflow-hidden"
+                    style="max-height: 400px;"> {{-- Set batas tinggi awal artikel saat di-minimize (misal: 400px) --}}
 
-                {!! $post->content !!}
+                    {!! $post->content !!}
 
-            </div>
-            {{-- LIKE SECTION --}}
-            <div class="flex items-center gap-4 mt-8">
-
-                <div class="bg-gray-100 px-5 py-3 rounded-2xl text-gray-700 font-medium">
-                    ❤️ {{ $post->likes->count() }} Likes
                 </div>
 
+                {{-- 2. LAYER GRADASI BLUR TRANSPARAN SAAT DI-MINIMIZE --}}
+                <div id="readmore-gradient"
+                    class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent pointer-events-none">
+                </div>
+            </div>
+
+            {{-- 3. TOMBOL READ MORE / SHOW LESS --}}
+            <div class="mt-4 flex justify-center">
+                <button onclick="toggleArticleContent()" id="btn-readmore"
+                    class="bg-sky-100 hover:bg-sky-200 text-sky-700 font-bold px-6 py-3 rounded-2xl transition duration-300 flex items-center gap-2 shadow-sm">
+                    <span id="text-readmore">Read More</span>
+                    <svg id="icon-readmore" class="w-4 h-4 transition-transform duration-300" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+            </div>
+            {{-- LIKE SECTION--}}
+            <div class="mt-8">
                 @auth
-
-                <form action="/like/{{ $post->id }}" method="POST">
-
+                <form action="/like/{{ $post->id }}" method="POST" class="inline-block">
                     @csrf
 
-                    <button class="bg-sky-600 hover:bg-sky-700 text-white px-6 py-3 rounded-2xl transition">
-
-                        @if($post->likes->where('user_id', auth()->id())->count())
-                        Unlike
-                        @else
-                        Like
-                        @endif
-
+                    @if($post->likes->where('user_id', auth()->id())->count())
+                    {{-- TAMPILAN SUDAH DI-LIKE: Merah pekat, teks font-black, efek scale-up pas di-hover --}}
+                    <button type="submit"
+                        class="group bg-rose-500 hover:bg-rose-600 text-white px-6 py-3 rounded-2xl font-black text-base flex items-center gap-2.5 transition-all duration-300 transform active:scale-90 hover:scale-105 shadow-md shadow-rose-500/30">
+                        <span class="inline-block animate-[heartBeat_1s_ease-in-out_infinite] text-xl">❤️</span>
+                        <span class="tracking-wide">{{ $post->likes->count() }} Likes</span>
                     </button>
-
+                    @else
+                    {{-- TAMPILAN BELUM DI-LIKE: Abu-abu, pas di-hover berubah jadi rose soft, lope putihnya membal --}}
+                    <button type="submit"
+                        class="group bg-gray-100 hover:bg-rose-50 text-gray-700 hover:text-rose-600 px-6 py-3 rounded-2xl font-black text-base flex items-center gap-2.5 transition-all duration-300 transform active:scale-90 hover:scale-105">
+                        <span
+                            class="inline-block transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12 text-xl">🤍</span>
+                        <span class="tracking-wide">{{ $post->likes->count() }} Likes</span>
+                    </button>
+                    @endif
                 </form>
-
+                @else
+                {{-- JIKA USER BELUM LOGIN --}}
+                <div
+                    class="bg-gray-100 text-gray-400 px-6 py-3 rounded-2xl font-black text-base inline-flex items-center gap-2.5 cursor-not-allowed">
+                    <span class="text-xl">🤍</span>
+                    <span class="tracking-wide">{{ $post->likes->count() }} Likes</span>
+                </div>
                 @endauth
-
             </div>
 
             {{-- COMMENT SECTION --}}
@@ -172,3 +197,41 @@
 </div>
 
 @endsection
+
+<script>
+function toggleArticleContent() {
+    const content = document.getElementById('article-content');
+    const gradient = document.getElementById('readmore-gradient');
+    const btnText = document.getElementById('text-readmore');
+    const btnIcon = document.getElementById('icon-readmore');
+
+    // Jika saat ini sedang di-minimize (tingginya 400px)
+    if (content.style.maxHeight === '400px') {
+        // Buka seluruh konten secara full otomatis
+        content.style.maxHeight = content.scrollHeight + "px";
+
+        // Sembunyikan efek blur transparan di bawah teks
+        gradient.classList.add('hidden');
+
+        // Ubah teks & putar icon panah ke atas
+        btnText.innerText = 'Show Less';
+        btnIcon.classList.add('rotate-180');
+    } else {
+        // Tutup kembali artikel ke tinggi semula
+        content.style.maxHeight = '400px';
+
+        // Munculkan kembali efek blur transparan
+        gradient.classList.remove('hidden');
+
+        // Kembalikan teks & arah icon panah ke bawah
+        btnText.innerText = 'Read More';
+        btnIcon.classList.remove('rotate-180');
+
+        // Otomatis scroll layar sedikit ke atas agar pembaca tidak bingung saat artikel menutup
+        content.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest'
+        });
+    }
+}
+</script>

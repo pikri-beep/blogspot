@@ -10,14 +10,34 @@ use Illuminate\Support\Str;
 class PostController extends Controller
 {
     // HOME
-    public function home()
-    {
-        $posts = Post::with('user')
-            ->latest()
-            ->paginate(6);
+    public function home(Request $request)
+{
+    $query = Post::with('user')
+        ->withCount('likes', 'comments')
+        ->latest();
 
-        return view('pages.home', compact('posts'));
+    // SEARCH
+    if ($request->search) {
+
+        $query->where('title', 'like', '%' . $request->search . '%');
+
     }
+
+    $posts = $query->paginate(5);
+
+    // TRENDING
+    $trending = Post::with('user')
+        ->withCount('likes', 'comments')
+        ->get()
+        ->sortByDesc(function ($post) {
+
+            return $post->likes_count + $post->comments_count;
+
+        })
+        ->take(5);
+
+    return view('pages.home', compact('posts', 'trending'));
+}
 
     // DASHBOARD
     public function dashboard()
