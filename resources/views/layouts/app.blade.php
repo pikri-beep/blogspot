@@ -45,6 +45,7 @@
                         Home
                     </a>
 
+
                     @auth
                     <a href="/dashboard" class="hover:text-sky-600 font-medium transition">Dashboard</a>
 
@@ -98,7 +99,19 @@
                                     🚪 Logout
                                 </button>
                             </form>
+                            @else
+                            {{-- JIKA USER BELUM LOGIN (GUEST) --}}
+                            {{-- Tombol Login: Desainnya clean, text-only dengan efek hover --}}
+                            <a href="/login"
+                                class="text-gray-600 hover:text-sky-600 font-bold px-4 py-2.5 transition text-sm">
+                                Login
+                            </a>
 
+                            {{-- Tombol Register: Desainnya bold, pakai background button sky biar eye-catching --}}
+                            <a href="/register"
+                                class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-5 py-2.5 rounded-2xl transition shadow-md shadow-sky-600/10 text-sm">
+                                Register
+                            </a>
                         </div>
                     </div>
 

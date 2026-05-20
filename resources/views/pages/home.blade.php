@@ -226,83 +226,79 @@
             <div class="bg-white border border-gray-100 rounded-[32px] p-8 shadow-sm">
 
                 <div class="flex items-center justify-between mb-8">
-
                     <div>
-
                         <p class="text-sky-600 font-semibold text-sm uppercase tracking-[3px]">
                             Trending
                         </p>
-
                         <h3 class="text-3xl font-black text-gray-900 mt-2">
                             🔥 Trending Articles
                         </h3>
-
                     </div>
-
                 </div>
 
-                <div class="space-y-8">
-
+                <div class="space-y-6">
                     @foreach($trending as $post)
-
                     <a href="/article/{{ $post->slug }}"
-                        class="block group border-b border-gray-100 pb-6 last:border-0">
+                        class="block group border-b border-gray-50 pb-5 last:border-0 last:pb-0">
 
-                        <div class="flex gap-5">
+                        <div class="flex items-start gap-4">
 
-                            <div class="text-3xl font-black text-sky-100 group-hover:text-sky-500 transition">
+                            {{-- KIRI: ANGKA NUMERIK --}}
+                            <div
+                                class="text-3xl font-black text-sky-100 group-hover:text-sky-500 transition shrink-0 pt-1">
                                 0{{ $loop->iteration }}
                             </div>
 
-                            <div>
+                            {{-- TENGAH: GAMBAR THUMBNAIL --}}
+                            <div
+                                class="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shrink-0 border border-gray-100 shadow-sm relative group-hover:shadow transition duration-300">
+                                @if($post->image)
+                                <img src="{{ asset('storage/' . $post->image) }}"
+                                    class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                @else
+                                {{-- Placeholder jika tidak ada foto --}}
+                                <div
+                                    class="w-full h-full bg-sky-50 flex items-center justify-center text-sky-400 font-bold text-xs">
+                                    No Img
+                                </div>
+                                @endif
+                            </div>
 
+                            {{-- KANAN: JUDUL & KUMPULAN META (SEJAJAR) --}}
+                            <div class="flex-1 min-w-0">
+                                {{-- Judul Artikel --}}
                                 <h4
-                                    class="text-lg font-bold leading-snug text-gray-900 group-hover:text-sky-600 transition">
-
+                                    class="text-sm font-bold leading-snug text-gray-900 group-hover:text-sky-600 transition line-clamp-2 mb-2">
                                     {{ $post->title }}
-
                                 </h4>
 
-                                <p class="text-sm text-gray-500 mt-3">
+                                {{-- Meta Info: Tanggal, Like, Comment Sejajar Satu Baris --}}
+                                <div class="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400">
+                                    {{-- Tanggal --}}
+                                    <span>{{ $post->created_at->format('d M Y') }}</span>
 
-                                    {{ $post->created_at->format('d M Y') }}
+                                    <span class="text-gray-200">•</span>
 
-                                </p>
-
-                                <div class="flex items-center gap-4 mt-3 text-sm text-gray-500">
-
-                                    {{-- LIKE --}}
+                                    {{-- Like Count --}}
                                     <div class="flex items-center gap-1">
-
-                                        ❤️
-
-                                        <span>
-                                            {{ $post->likes_count }}
-                                        </span>
-
+                                        <span>❤️</span>
+                                        <span class="font-medium text-gray-500">{{ $post->likes_count }}</span>
                                     </div>
 
-                                    {{-- COMMENT --}}
+                                    <span class="text-gray-200">•</span>
+
+                                    {{-- Comment Count --}}
                                     <div class="flex items-center gap-1">
-
-                                        💬
-
-                                        <span>
-                                            {{ $post->comments_count }}
-                                        </span>
-
+                                        <span>💬</span>
+                                        <span class="font-medium text-gray-500">{{ $post->comments_count }}</span>
                                     </div>
-
                                 </div>
-
                             </div>
 
                         </div>
 
                     </a>
-
                     @endforeach
-
                 </div>
 
             </div>

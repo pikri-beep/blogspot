@@ -16,6 +16,9 @@ Route::get('/', [PostController::class, 'home']);
 
 Route::get('/article/{slug}', [PostController::class, 'detail']);
 
+// Route profil publik penulis lain
+Route::get('/user/{id}', [ProfileController::class, 'showPublicProfile']);
+
 /*
 |--------------------------------------------------------------------------
 | AUTH ROUTES

@@ -18,7 +18,17 @@
         <div class="p-10">
 
             <div class="flex items-center gap-3 text-gray-500 mb-5">
-                <span>{{ $post->user->name }}</span>
+                <a href="/user/{{ $post->user->id }}"
+                    class="hover:text-sky-600 font-semibold transition flex items-center gap-2 group">
+                    {{-- Kalau mau tambah avatar kecil penulis di sebelah namanya --}}
+                    @if($post->user->avatar)
+                    <img src="{{ asset('storage/'.$post->user->avatar) }}" class="w-6 h-6 rounded-full object-cover">
+                    @else
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode($post->user->name) }}&background=0ea5e9&color=fff&size=50"
+                        class="w-6 h-6 rounded-full object-cover">
+                    @endif
+                    <span class="group-hover:underline">{{ $post->user->name }}</span>
+                </a>
                 <span>•</span>
                 <span>{{ $post->created_at->format('d M Y') }}</span>
             </div>
@@ -170,68 +180,94 @@
 
     <div>
 
-        <div class="sticky top-24 bg-white rounded-3xl shadow-sm p-6">
+        {{-- KOLOM KANAN (RELATED POSTS) --}}
+        <div class="sticky top-24">
 
-            <h3 class="text-xl font-bold mb-6">
-                Related Posts
-            </h3>
+            <div class="bg-white rounded-3xl shadow-sm p-6 border border-gray-100">
+                <h3 class="text-xl font-black mb-6 text-gray-900 tracking-wide flex items-center gap-2">
+                    📰 Related Posts
+                </h3>
 
-            <div class="space-y-5">
+                <div class="space-y-6">
+                    @foreach($related as $item)
+                    <a href="/article/{{ $item->slug }}" class="flex items-start gap-4 group block">
 
-                @foreach($related as $item)
+                        {{-- GAMBAR THUMBNAIL KECIL --}}
+                        <div
+                            class="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shrink-0 border border-gray-100 shadow-sm">
+                            @if($item->image)
+                            <img src="{{ asset('storage/' . $item->image) }}"
+                                class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                            @else
+                            {{-- Placeholder gambar kalau artikel related gak punya foto --}}
+                            <div
+                                class="w-full h-full bg-sky-50 flex items-center justify-center text-sky-500 font-bold text-xs">
+                                No Img
+                            </div>
+                            @endif
+                        </div>
 
-                <a href="/article/{{ $item->slug }}" class="block">
-                    <h4 class="font-semibold hover:text-sky-600">
-                        {{ $item->title }}
-                    </h4>
-                </a>
+                        {{-- JUDUL & DESKRIPSI SINGKAT --}}
+                        <div class="flex-1 min-w-0">
+                            {{-- Judul Artikel --}}
+                            <h4
+                                class="font-bold text-sm text-gray-800 group-hover:text-sky-600 transition duration-200 line-clamp-2 leading-snug mb-1">
+                                {{ $item->title }}
+                            </h4>
 
-                @endforeach
+                            {{-- Deskripsi/Kutipan Singkat (Dipotong otomatis biar gak kepanjangan) --}}
+                            <p class="text-xs text-gray-400 line-clamp-2 leading-relaxed">
+                                {{ Str::limit(strip_tags($item->content), 60, '...') }}
+                            </p>
+                        </div>
 
+                    </a>
+                    @if(!$loop->last)
+                    {{-- Garis pembatas tipis antar artikel, kecuali di artikel paling bawah --}}
+                    <hr class="border-gray-50">
+                    @endif
+                    @endforeach
+                </div>
             </div>
 
         </div>
 
-    </div>
+        @endsection
 
-</div>
+        <script>
+        function toggleArticleContent() {
+            const content = document.getElementById('article-content');
+            const gradient = document.getElementById('readmore-gradient');
+            const btnText = document.getElementById('text-readmore');
+            const btnIcon = document.getElementById('icon-readmore');
 
-@endsection
+            // Jika saat ini sedang di-minimize (tingginya 400px)
+            if (content.style.maxHeight === '400px') {
+                // Buka seluruh konten secara full otomatis
+                content.style.maxHeight = content.scrollHeight + "px";
 
-<script>
-function toggleArticleContent() {
-    const content = document.getElementById('article-content');
-    const gradient = document.getElementById('readmore-gradient');
-    const btnText = document.getElementById('text-readmore');
-    const btnIcon = document.getElementById('icon-readmore');
+                // Sembunyikan efek blur transparan di bawah teks
+                gradient.classList.add('hidden');
 
-    // Jika saat ini sedang di-minimize (tingginya 400px)
-    if (content.style.maxHeight === '400px') {
-        // Buka seluruh konten secara full otomatis
-        content.style.maxHeight = content.scrollHeight + "px";
+                // Ubah teks & putar icon panah ke atas
+                btnText.innerText = 'Show Less';
+                btnIcon.classList.add('rotate-180');
+            } else {
+                // Tutup kembali artikel ke tinggi semula
+                content.style.maxHeight = '400px';
 
-        // Sembunyikan efek blur transparan di bawah teks
-        gradient.classList.add('hidden');
+                // Munculkan kembali efek blur transparan
+                gradient.classList.remove('hidden');
 
-        // Ubah teks & putar icon panah ke atas
-        btnText.innerText = 'Show Less';
-        btnIcon.classList.add('rotate-180');
-    } else {
-        // Tutup kembali artikel ke tinggi semula
-        content.style.maxHeight = '400px';
+                // Kembalikan teks & arah icon panah ke bawah
+                btnText.innerText = 'Read More';
+                btnIcon.classList.remove('rotate-180');
 
-        // Munculkan kembali efek blur transparan
-        gradient.classList.remove('hidden');
-
-        // Kembalikan teks & arah icon panah ke bawah
-        btnText.innerText = 'Read More';
-        btnIcon.classList.remove('rotate-180');
-
-        // Otomatis scroll layar sedikit ke atas agar pembaca tidak bingung saat artikel menutup
-        content.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest'
-        });
-    }
-}
-</script>
+                // Otomatis scroll layar sedikit ke atas agar pembaca tidak bingung saat artikel menutup
+                content.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
+            }
+        }
+        </script>
